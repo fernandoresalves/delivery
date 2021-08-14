@@ -1,6 +1,6 @@
 import express from "express";
 import logger from "../logger.js";
-import { criar } from "../Pedido.js";
+import { criar, obter, atualizar } from "../services/pedidoService.js";
 
 const route = express.Router();
 
@@ -17,6 +17,9 @@ route.post("/", async (req, res, next) => {
 
 route.put("/:id", async (req, res, next) => {
   try {
+    const result = await atualizar(req.body);
+
+    res.send(result);
   } catch (error) {
     next(error);
   }
@@ -38,6 +41,8 @@ route.delete("/:id", async (req, res, next) => {
 
 route.get("/:id", async (req, res, next) => {
   try {
+    const result = await obter(req.params.id);
+    res.send(result);
   } catch (error) {
     next(error);
   }
