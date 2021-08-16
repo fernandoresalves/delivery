@@ -1,6 +1,7 @@
 import { promises as fs, writeFile } from "fs";
 import express, { response } from "express";
 import pedidosRouter from "./routes/pedidos.js";
+import logger from "./logger.js";
 
 global.fileName = "pedidos.json";
 
@@ -10,6 +11,7 @@ app.use(express.json());
 app.use("/pedidos", pedidosRouter);
 
 app.use((error, req, res, next) => {
+  logger.error(`${req.method} - ${req.baseUrl} - ${error.message}`);
   res.status(400).send(`Ops, houve um erro ${error}`);
 });
 app.listen(3000, async () => {
