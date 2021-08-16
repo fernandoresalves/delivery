@@ -18,12 +18,14 @@ export async function criar(pedido) {
 }
 
 export async function atualizar(pedido) {
-  let data = JSON.parse(await fs.readFile(global.fileName));
-  let p = data.pedidos.find((x) => {
-    return x.id == pedido.id;
-  });
+  try {
+    const data = JSON.parse(await fs.readFile(global.fileName));
+    data.pedidos = data.pedidos.filter((p) => p.id !== pedido.id);
 
-  p = pedido;
+    data.pedidos.push(pedido);
+
+    await fs.writeFile(global.fileName, JSON.stringify(data));
+  } catch (error) {}
 }
 
 export async function obter(id) {
@@ -34,5 +36,14 @@ export async function obter(id) {
     });
 
     return pedido;
+  } catch (error) {}
+}
+
+export async function remover(id) {
+  try {
+    const data = JSON.parse(await fs.readFile(global.fileName));
+    data.pedidos = data.pedidos.filter((p) => p.id !== id);
+
+    await fs.writeFile(global.fileName, JSON.stringify(data));
   } catch (error) {}
 }
