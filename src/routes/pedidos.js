@@ -1,6 +1,15 @@
 import express from "express";
 import logger from "../logger.js";
-import { criar, obter, atualizar, remover } from "../services/pedidoService.js";
+import {
+  criar,
+  obter,
+  atualizar,
+  remover,
+  entregue,
+  comprasPorCliente,
+  comprasPorProduto,
+  maisvendidos,
+} from "../services/pedidoService.js";
 
 const route = express.Router();
 
@@ -25,8 +34,10 @@ route.put("/:id", async (req, res, next) => {
   }
 });
 
-route.put("/:id/entregar", async (req, res, next) => {
+route.patch("/:id/entregue", async (req, res, next) => {
   try {
+    await entregue(req.params.id, req.body.entregue);
+    res.end();
   } catch (error) {
     next(error);
   }
@@ -50,15 +61,19 @@ route.get("/:id", async (req, res, next) => {
   }
 });
 
-route.get("/cliente/:name/compras", async (req, res, next) => {
+route.get("/cliente/compras/:name", async (req, res, next) => {
   try {
+    const result = await comprasPorCliente(req.params.name);
+    res.send(result);
   } catch (error) {
     next(error);
   }
 });
 
-route.get("/produto/:name/compras", async (req, res, next) => {
+route.get("/produto/compras/:name", async (req, res, next) => {
   try {
+    const result = await comprasPorProduto(req.params.name);
+    res.send(result);
   } catch (error) {
     next(error);
   }
@@ -66,6 +81,8 @@ route.get("/produto/:name/compras", async (req, res, next) => {
 
 route.get("/produto/maisvendidos", async (req, res, next) => {
   try {
+    const result = await maisvendidos();
+    res.send(result);
   } catch (error) {
     next(error);
   }

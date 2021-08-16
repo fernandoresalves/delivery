@@ -20,9 +20,20 @@ export async function criar(pedido) {
 export async function atualizar(pedido) {
   try {
     const data = JSON.parse(await fs.readFile(global.fileName));
-    data.pedidos = data.pedidos.filter((p) => p.id !== pedido.id);
+    const index = data.pedidos.findIndex((p) => p.id == pedido.id);
 
-    data.pedidos.push(pedido);
+    data.pedidos[index] = pedido;
+
+    await fs.writeFile(global.fileName, JSON.stringify(data));
+  } catch (error) {}
+}
+
+export async function entregue(id, entregue) {
+  try {
+    const data = JSON.parse(await fs.readFile(global.fileName));
+    const index = data.pedidos.findIndex((p) => p.id == id);
+
+    data.pedidos[index].entregue = entregue;
 
     await fs.writeFile(global.fileName, JSON.stringify(data));
   } catch (error) {}
@@ -45,5 +56,52 @@ export async function remover(id) {
     data.pedidos = data.pedidos.filter((p) => p.id !== id);
 
     await fs.writeFile(global.fileName, JSON.stringify(data));
+  } catch (error) {}
+}
+
+export async function comprasPorCliente(nome) {
+  try {
+    const data = JSON.parse(await fs.readFile(global.fileName));
+    const pedidos = data.pedidos.filter((x) => {
+      return x.cliente === nome && x.entregue === true;
+    });
+
+    const total = pedidos.reduce((acumulado, pedido) => {
+      if (acumulado.valor) {
+        return acumulado.valor + pedido.valor;
+      }
+      return acumulado + pedido.valor;
+    });
+
+    return { total };
+  } catch (error) {}
+}
+
+export async function comprasPorProduto(nome) {
+  try {
+    const data = JSON.parse(await fs.readFile(global.fileName));
+    const pedidos = data.pedidos.filter((x) => {
+      return x.produto === nome && x.entregue === true;
+    });
+
+    const total = pedidos.reduce((acumulado, pedido) => {
+      if (acumulado.valor) {
+        return acumulado.valor + pedido.valor;
+      }
+      return acumulado + pedido.valor;
+    });
+
+    return { total };
+  } catch (error) {}
+}
+
+export async function maisvendidos() {
+  try {
+    const data = JSON.parse(await fs.readFile(global.fileName));
+    const pedidos = data.pedidos.filter((x) => {
+      return x.entregue === true;
+    });
+
+    return pedidos[0];
   } catch (error) {}
 }
