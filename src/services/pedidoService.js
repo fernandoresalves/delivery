@@ -53,8 +53,8 @@ export async function obter(id) {
 export async function remover(id) {
   try {
     const data = JSON.parse(await fs.readFile(global.fileName));
-    data.pedidos = data.pedidos.filter((p) => p.id !== id);
-
+    const d = data.pedidos.filter((p) => p.id != id);
+    data.pedidos = d;
     await fs.writeFile(global.fileName, JSON.stringify(data));
   } catch (error) {}
 }
@@ -102,6 +102,13 @@ export async function maisvendidos() {
       return x.entregue === true;
     });
 
-    return pedidos[0];
+    const contagemProduto = pedidos.reduce((contagemProduto, produto) => {
+      contagemProduto[produto.produto] = contagemProduto[produto.produto] || [];
+      contagemProduto[produto.produto].push(produto);
+
+      return contagemProduto;
+    }, {});
+
+    return contagemProduto;
   } catch (error) {}
 }

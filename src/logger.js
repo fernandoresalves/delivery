@@ -9,7 +9,7 @@ const logger = winston.createLogger({
   level: "info",
   format: combine(label({ label: "deleivery-api" }), timestamp(), myFormat),
   transports: [
-    new winston.transports.Console(),
+    //new winston.transports.Console(),
     new winston.transports.File({ filename: "logs.log" }),
   ],
 });
